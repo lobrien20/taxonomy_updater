@@ -1,6 +1,7 @@
 #!/usr/bin/envs python3
 # updates the taxonomy of scripts. FIrst argument is the list of strains/species. Second argument is output directory
-# dash indented list!!!
+
+# "_" indented list!!!
 import sys,os
 
 from ete3 import NCBITaxa
@@ -24,8 +25,10 @@ else:
 	print("Directory already exists. Continuing anyway...")
 
 # Give a list as a txt file and loop over this list to identify the full taxonomic lineage
+
 strain_file = open(sys.argv[1], "r")
 strain_list = strain_file.readlines()
+
 failed_taxos_list = []
 taxo_dict = {}
 
@@ -35,7 +38,9 @@ taxonomy_list.write("kingdom,phyla,class,order,family,genus,species,strain\n") #
 
 old_name_list = [] # to create list of original names
 new_name_list = [] # to create list of new names
+
 for strain in strain_list: # loops over the stains on list 
+
     strain_stripped = strain.strip() # removes any crap '\n' etc.
     print(strain_stripped)
     split_name = strain_stripped.split("_") # splits the name by the hyphen indented list 
@@ -65,7 +70,8 @@ for strain in strain_list: # loops over the stains on list
         
         except KeyError: # When no taxa found
             
-            failed_taxo_count = failed_taxo_count + 1 # counts how many times
+            
+	    failed_taxo_count = failed_taxo_count + 1 # counts how many times
             
             if failed_taxo_count == number_of_splits: # if it has checked every piece of the name, it will add it to the failed taxonomy list
                 failed_taxos_list.append(strain_stripped) 
@@ -76,19 +82,25 @@ for strain in strain_list: # loops over the stains on list
             continue
     if is_fail == 1:
         continue        
-#### ADDDED CODE TIME!
+
+    
     item_proper = item[0]
+    
     lineage = ncbi.get_lineage(item_proper) # Gets the full taxonommic information in number id form
 
     names = ncbi.get_taxid_translator(lineage) # converts this full taxa info into names
 
 
     for id,taxonomy in names.items(): # Basically finds id of the specific taxonomic item into taxonomic rank
-	    taxo = ncbi.get_rank([id]) # finds rank of taxonomy eg. { 21389 : 'species' }
+	    
+        taxo = ncbi.get_rank([id]) # finds rank of taxonomy eg. { 21389 : 'species' }
 	    taxa = taxo[id] # grabs the exact taxa
 	    taxo_dict[taxa] = taxonomy # Finds the name
+    
     taxonomy_error_check = 0
     # creates default strings
+    
+    
     superkingdom = "na"
     phylum = "na"
     clazz = "na"
@@ -117,7 +129,8 @@ for strain in strain_list: # loops over the stains on list
 	    if taxo == 'species':
 		    spec = actual
 		    species = spec.replace(" ", "_")
-	    if taxo == 'genus':
+	    
+        if taxo == 'genus':
 		    genus = actual
 
 
@@ -126,21 +139,27 @@ for strain in strain_list: # loops over the stains on list
 	    taxo_dict.clear()
 	    failed_taxos_list.append(strain_stripped)
 	    continue
-		
+	
+
+    # Next part is identification of new name
+    
     new_name = species
     if number_of_splits == 3: # checks whether we have strain information based on original name (can be common that the strain isn't in the ncbi taxonomy)
         
         strain_val = str(split_name[-1])
         new_name = species + "_" + strain_val # ADDS THE NEW SPECIES TO THE ORIGINAL STRAIN VAL!!!
         testing_rpts = new_name.split("_")
-        if testing_rpts[-1].upper() == testing_rpts[-2].upper():
-            print(testing_rpts)
+        
+        if testing_rpts[-1].upper() == testing_rpts[-2].upper(): # Stops new name having repeats. In some cases this occurs
+
             rpts_rem = "_".join(testing_rpts[:-1])
             new_name = rpts_rem
        
-        if testing_rpts[-1].upper() == testing_rpts[-3].upper() and testing_rpts[-2].upper() == testing_rpts[-4].upper():
+        if testing_rpts[-1].upper() == testing_rpts[-3].upper() and testing_rpts[-2].upper() == testing_rpts[-4].upper(): # Same as above, except if repeat is two 'words'
+            
             rpts_rem = "_".join(testing_rpts[-2])
             new_name = rpts_rem
+    
     elif number_of_splits >= 4: # if the original name was split four times, it will likely mean that the strain name is two words
         
         strain_preval = split_name[-2:]
@@ -149,10 +168,12 @@ for strain in strain_list: # loops over the stains on list
         testing_rpts = new_name.split("_")
         
         if testing_rpts[-1].upper() == testing_rpts[-2].upper():
+            
             rpts_rem = "_".join(testing_rpts[:-1])
-            new_name = rpts_rem
+            new_name = rpts_rem 
         
         if testing_rpts[-1].upper() == testing_rpts[-3].upper() and testing_rpts[-2].upper() == testing_rpts[-4].upper():
+            
             rpts_rem = "_".join(testing_rpts[:-2])
             new_name = rpts_rem
 
@@ -175,14 +196,18 @@ for strain in strain_list: # loops over the stains on list
 
     taxo_dict.clear()
 # Obtain lineage
+
 taxonomy_list.close()
 
 # Saves list of failed taxonomies in output directory
+
 failed_taxo_path = sys.argv[2] + "/" + "failed_taxos.txt"
 failed_taxos = open(failed_taxo_path, "w")
 failed_taxos.write("Failed taxonomies")
+
 for fail in failed_taxos_list:
-	failed_taxos.write("\n")
+	
+    failed_taxos.write("\n")
 	failed_taxos.write(fail)
 
 # Save to file
@@ -198,10 +223,13 @@ name_changes = open(name_change_path, "w")
 act_names_changed = []
 changed_count = 0
 unchanged_count = 0
+
 for old, new in zip(old_name_list, new_name_list):
-	if old.upper() == new.upper():
+	
+    if old.upper() == new.upper():
 		unchanged_count = unchanged_count + 1
-	else:
+	
+    else:
 		changed_count = changed_count + 1
 		act_changed = "\n" + old + "," + new
 		act_names_changed.append(act_changed)
@@ -221,12 +249,14 @@ name_changes.close()
 
 
 act_name_change_path = sys.argv[2] + "/" + "names_changes.csv"  # For the path of the actual name change file
+
 act_file = open(act_name_change_path, "w") # opens actual name file
 act_file.write("old_name,new_name") # writes column
 
 for changes in act_names_changed: # iterates over list of actual name changes
 
 	act_file.write(changes) # writes to actual name change file
+
 act_file.close() # closes file
 
 
