@@ -6,6 +6,7 @@ import sys,os
 from ete3 import NCBITaxa
 import os.path
 ncbi = NCBITaxa()
+
 # Checks if output directory exists as folder or file
 dir_made_or_not = os.path.isdir(sys.argv[2]) # boolean for if it exists as directory
 is_file = os.path.isfile(sys.argv[2]) # boolean for if it exists as file
@@ -176,6 +177,7 @@ for strain in strain_list: # loops over the stains on list
 # Obtain lineage
 taxonomy_list.close()
 
+# Saves list of failed taxonomies in output directory
 failed_taxo_path = sys.argv[2] + "/" + "failed_taxos.txt"
 failed_taxos = open(failed_taxo_path, "w")
 failed_taxos.write("Failed taxonomies")
@@ -186,6 +188,10 @@ for fail in failed_taxos_list:
 # Save to file
 
 failed_taxos.close()
+
+
+# Saves csv list of changes taxonomies in output directory
+
 
 name_change_path = sys.argv[2] + "/" + "name_changes_summary.csv"
 name_changes = open(name_change_path, "w")
@@ -211,6 +217,9 @@ for old, new in zip(old_name_list, new_name_list):
 
 name_changes.close()
 
+# Saves list of names actually changed to output directory
+
+
 act_name_change_path = sys.argv[2] + "/" + "names_changes.csv"  # For the path of the actual name change file
 act_file = open(act_name_change_path, "w") # opens actual name file
 act_file.write("old_name,new_name") # writes column
@@ -221,4 +230,4 @@ for changes in act_names_changed: # iterates over list of actual name changes
 act_file.close() # closes file
 
 
-            
+
