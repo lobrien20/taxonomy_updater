@@ -13,16 +13,16 @@ dir_made_or_not = os.path.isdir(sys.argv[2]) # boolean for if it exists as direc
 is_file = os.path.isfile(sys.argv[2]) # boolean for if it exists as file
 
 if dir_made_or_not == False: # is its not already a directory
-	
-	if is_file == False: # if its not already a file
-		os.mkdir(sys.argv[2]) # creates directory
-		print("Creating directory" + " " + sys.argv[2])
-	else: # if it is already a file, runs exit
-		print("There is a file where the directory is. Exiting.")
-		exit()
+    
+    if is_file == False: # if its not already a file
+        os.mkdir(sys.argv[2]) # creates directory
+        print("Creating directory" + " " + sys.argv[2])
+    else: # if it is already a file, runs exit
+        print("There is a file where the directory is. Exiting.")
+        exit()
 
 else:
-	print("Directory already exists. Continuing anyway...")
+    print("Directory already exists. Continuing anyway...")
 
 # Give a list as a txt file and loop over this list to identify the full taxonomic lineage
 
@@ -69,19 +69,20 @@ for strain in strain_list: # loops over the stains on list
             break # breaks the loop because it found the best taxonomy
         
         except KeyError: # When no taxa found
-            
-            
-	    failed_taxo_count = failed_taxo_count + 1 # counts how many times
-            
+
+            failed_taxo_count = failed_taxo_count + 1 # counts how many times
+
             if failed_taxo_count == number_of_splits: # if it has checked every piece of the name, it will add it to the failed taxonomy list
+                
                 failed_taxos_list.append(strain_stripped) 
                 is_fail = 1
                 break
             
-            
-            continue
+
+                continue
+    
     if is_fail == 1:
-        continue        
+            continue
 
     
     item_proper = item[0]
@@ -92,10 +93,10 @@ for strain in strain_list: # loops over the stains on list
 
 
     for id,taxonomy in names.items(): # Basically finds id of the specific taxonomic item into taxonomic rank
-	    
+        
         taxo = ncbi.get_rank([id]) # finds rank of taxonomy eg. { 21389 : 'species' }
-	    taxa = taxo[id] # grabs the exact taxa
-	    taxo_dict[taxa] = taxonomy # Finds the name
+        taxa = taxo[id] # grabs the exact taxa
+        taxo_dict[taxa] = taxonomy # Finds the name
     
     taxonomy_error_check = 0
     # creates default strings
@@ -109,37 +110,37 @@ for strain in strain_list: # loops over the stains on list
     genus = "na"
     spec = "na"
     species = "na"
-	
+    
     for taxo,actual in taxo_dict.items(): # Loops over dictionary and checks rank
-		
-	    if taxo == 'superkingdom': # eg if this dict item is a superkingdom
-		    superkingdom = actual # eg. superkingdom variable is saved
+        
+        if taxo == 'superkingdom': # eg if this dict item is a superkingdom
+            superkingdom = actual # eg. superkingdom variable is saved
 
-	    if taxo == 'phylum':
-		    phylum = actual
+        if taxo == 'phylum':
+            phylum = actual
 
-	    if taxo == 'class':
-		    clazz = actual
+        if taxo == 'class':
+            clazz = actual
 
-	    if taxo == 'order':
-		    order = actual
-	    if taxo == 'family':
-		    family = actual
-	
-	    if taxo == 'species':
-		    spec = actual
-		    species = spec.replace(" ", "_")
-	    
+        if taxo == 'order':
+            order = actual
+        if taxo == 'family':
+            family = actual
+    
+        if taxo == 'species':
+            spec = actual
+            species = spec.replace(" ", "_")
+        
         if taxo == 'genus':
-		    genus = actual
+            genus = actual
 
 
-	# if it cant identify the species, it calls this a fail. Because it should be able to if it has gotten this far.
+    # if it cant identify the species, it calls this a fail. Because it should be able to if it has gotten this far.
     if species == "na": # so if species name is still na
-	    taxo_dict.clear()
-	    failed_taxos_list.append(strain_stripped)
-	    continue
-	
+        taxo_dict.clear()
+        failed_taxos_list.append(strain_stripped)
+        continue
+    
 
     # Next part is identification of new name
     
@@ -188,7 +189,7 @@ for strain in strain_list: # loops over the stains on list
 
 
 
-	# writes taxonomic information to taxonomy file
+    # writes taxonomic information to taxonomy file
     taxonomy_list.write(superkingdom + "," + phylum + "," + clazz + "," + order + "," + family + "," + genus + "," + species + "," + strain_val + "\n")
 
     old_name_list.append(strain_stripped) # adds original name to list because this has worked
@@ -206,9 +207,9 @@ failed_taxos = open(failed_taxo_path, "w")
 failed_taxos.write("Failed taxonomies")
 
 for fail in failed_taxos_list:
-	
+    
     failed_taxos.write("\n")
-	failed_taxos.write(fail)
+    failed_taxos.write(fail)
 
 # Save to file
 
@@ -225,22 +226,22 @@ changed_count = 0
 unchanged_count = 0
 
 for old, new in zip(old_name_list, new_name_list):
-	
+    
     if old.upper() == new.upper():
-		unchanged_count = unchanged_count + 1
-	
+        unchanged_count = unchanged_count + 1
+    
     else:
-		changed_count = changed_count + 1
-		act_changed = "\n" + old + "," + new
-		act_names_changed.append(act_changed)
+        changed_count = changed_count + 1
+        act_changed = "\n" + old + "," + new
+        act_names_changed.append(act_changed)
 
 name_changes.write("unchanged_count:" + str(unchanged_count) + "," + "changed_count:" + str(changed_count) + "\n")
 
 name_changes.write("old_name,new_name")
 
 for old, new in zip(old_name_list, new_name_list):
-	to_write = "\n" + old + "," + new
-	name_changes.write(to_write)
+    to_write = "\n" + old + "," + new
+    name_changes.write(to_write)
 
 
 name_changes.close()
@@ -255,7 +256,7 @@ act_file.write("old_name,new_name") # writes column
 
 for changes in act_names_changed: # iterates over list of actual name changes
 
-	act_file.write(changes) # writes to actual name change file
+    act_file.write(changes) # writes to actual name change file
 
 act_file.close() # closes file
 
